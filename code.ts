@@ -8,11 +8,6 @@
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__);
 
-interface TextAttribute<T> {
-  range: [number, number]
-  value: T 
-}
-
 interface Dictionary<T> {
   [Key: number]: T
 }
