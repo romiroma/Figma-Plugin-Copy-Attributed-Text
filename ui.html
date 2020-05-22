@@ -1,0 +1,23 @@
+<div id="selection"></div>
+<script>
+
+onmessage = msg => {
+  let message = event.data.pluginMessage;
+
+  
+  let selectionNode = document.getElementById("selection")
+  selectionNode.innerHTML = message.body;
+  console.log('message', message.body)
+
+  if (message.copy) {
+    let sel = window.getSelection();
+    let range = document.createRange(); //range object
+    range.selectNodeContents(selectionNode); //sets Range
+    sel.removeAllRanges(); //remove all ranges from selection
+    sel.addRange(range);//add Range to a Selection.
+    document.execCommand('copy')
+  }
+
+}
+
+</script>
