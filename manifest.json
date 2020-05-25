@@ -1,5 +1,5 @@
 {
-  "name": "CopyAttributedText",
+  "name": "Attributed Text Copy Helper",
   "id": "844921199150112500",
   "api": "1.0.0",
   "main": "code.js",
