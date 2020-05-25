@@ -13,7 +13,7 @@ When developing applications in XCode, it's fast just to copy text from design v
 That's it, now you have attributed text from TextNode copied into your clipboard! Paste it into editors, what support that and enjoy!
 
 ### What doesn't work
-* San Francisco font family (web version only)
+* San Francisco font family (web version only, desktop works fine)
 
 #### Troubleshooting 
 if you have any issues, please, create github issue or contact me via email: romiroma@icloud.com
