@@ -8,3 +8,5 @@ So, how it works:
 1. Select TextNode in side navigator or on canvas
 
 That's it, now you have attributed text from TextNode copied into your clipboard! Paste it into editors, what support that and enjoy!
+
+if you have any issues, please, create github issue or contact me via email: romiroma@icloud.com
