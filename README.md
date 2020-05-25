@@ -4,7 +4,7 @@ When developing applications in XCode, it's fast just to copy text from design v
 
 So, how it works:
 
-# Start Plugin
-# Select TextNode in side navigator or on canvas
+0. Start Plugin
+1. Select TextNode in side navigator or on canvas
 
 That's it, now you have attributed text from TextNode copied into your clipboard! Paste it into editors, what support that and enjoy!
