@@ -8,20 +8,16 @@
 // This shows the HTML page in "ui.html".
 figma.showUI(__html__);
 
-interface Dictionary<T> {
-  [Key: number]: T
-}
+type Getter<T> = (start: number, end: number) => T | PluginAPI['mixed']
 
-type Getter<T> = (start: number, end: number) => T
+function getAttributes<T>(count: number, getter: Getter<T>): Dictionary<T> {
+  let attributes: T[] = []
 
-function getAttributes<T>(node: TextNode, getter: Getter<T>): Dictionary<T> {
-  let attributes: Dictionary<T> = {}
-
-  for (var endIndex = 1; endIndex <= node.characters.length; endIndex++) {
+  for (var endIndex = 1; endIndex <= count; endIndex++) {
     let startIndex = endIndex - 1
-    let attribute = getter(startIndex, endIndex)
+    let attribute  = getter(startIndex, endIndex)
     if (attribute != figma.mixed) {
-      attributes[startIndex] = attribute
+      attributes.push(attribute)
     }
   }
 
@@ -34,18 +30,82 @@ function getSize(size: number): string {
 
 function getFamily(fontName: FontName): string {
   let fontWeight: string
-  switch (fontName.style) {
-    case 'Black': { fontWeight = '900'; break; }
-    case 'Heavy': { fontWeight = '800'; break; }
-    case 'Bold': { fontWeight = '700'; break; }
-    case 'Semibold': { fontWeight = '600'; break; }
-    case 'Medium': { fontWeight = '500'; break; }
-    case 'Regular': { fontWeight = '400'; break; }
-    case 'Thin': { fontWeight = '300'; break; }
-    case 'Light': { fontWeight = '200'; break; }
-    case 'Ultralight': { fontWeight = '100'; break; }
+  // console.log(fontName.style.toLowerCase())
+  // console.log(fontName)
+  // console.log('some')
+  let fontStyle = 'normal'
+  switch (fontName.style.toLowerCase()) {
+    case 'black': { fontWeight = '900'; break; }
+    case 'heavy': { fontWeight = '800'; break; }
+    case 'bold': { fontWeight = '700'; break; }
+    case 'semibold': { fontWeight = '600'; break; }
+    case 'medium': { fontWeight = '500'; break; }
+    case 'regular': { fontWeight = '400'; break; }
+    case 'thin': { fontWeight = '300'; break; }
+    case 'light': { fontWeight = '200'; break; }
+    case 'ultralight': { fontWeight = '100'; break; }
+    case 'extralight': { fontWeight = '100'; break; }
+    case 'italic': { fontWeight = '400'; fontStyle = 'italic'; break; }
+    case 'ultralight italic': { fontWeight = '100'; fontStyle = 'italic'; break; }
+    case 'light italic': { fontWeight = '200'; fontStyle = 'italic'; break; }
+    case 'thin italic': { fontWeight = '300'; fontStyle = 'italic'; break; }
+    case 'regular italic': { fontWeight = '400'; fontStyle = 'italic'; break; }
+    case 'medium italic': { fontWeight = '500'; fontStyle = 'italic'; break; }
+    case 'semibold italic': { fontWeight = '600'; fontStyle = 'italic'; break; }
+    case 'bold italic': { fontWeight = '700'; fontStyle = 'italic'; break; }
+    case 'heavy italic': { fontWeight = '800'; fontStyle = 'italic'; break; }
+    case 'black italic': { fontWeight = '900'; fontStyle = 'italic'; break; }
+    
   }
-  return 'font-family: ' + fontName.family + ';' + 'font-weight: ' + fontWeight + ';'
+  return 'font-family: ' + fontName.family + ';' + 'font-weight: ' + fontWeight + ';' + 'font-style:' + fontStyle +';'
+}
+
+function getTextAlignHorizontal(textAlign: string): string {
+  let result = 'text-align:'
+  switch (textAlign) {
+    case undefined: { result = ''; break; }
+    case 'LEFT': { result += ' left;'; break; }
+    case 'RIGHT': { result += ' right;'; break; }
+    case 'CENTER': { result += ' center;'; break; }
+    case 'JUSTIFIED': { result += ' justify;'; break; }
+  }
+  return result
+}
+
+function getTextIndent(indent: number): string {
+  if (indent == undefined) {
+    return ''
+  }
+  return 'text-indent: ' + indent + 'px;'
+}
+
+function getLineHeight(lineHeight: LineHeight): string {
+  let result = 'line-height: '
+  if ('value' in lineHeight) {
+    result += lineHeight.value
+    switch (lineHeight.unit) {
+      case ("PERCENT":
+        { result += '%'; break; }
+      case ("PIXELS"):
+        { result += 'px'; break; }
+    }
+    result += ';';
+    
+  } else {
+    result += 'auto;'
+  }
+  return result
+}
+
+function getTextDecoration(textDecoration: TextDecoration) {
+  let result = 'text-decoration: '
+  switch (textDecoration) {
+    case undefined: { result = ''; break; }
+    case "NONE": { result = ''; break; }
+    case "STRIKETHROUGH": { result += 'line-through;'; break; }
+    case "UNDERLINE": { result += 'underline;'; break; }
+  }
+  return result
 }
 
 // TODO: RESOLVE  MORE PAINT TYPES
@@ -64,45 +124,109 @@ function getColor(paint: Paint[]): string {
   }
 }
 
+function getLetterSpacing(letterSpacing: LetterSpacing): string {
+  if (letterSpacing == undefined) {
+    return ''
+  }
+  let result = 'letter-spacing: '
+  switch (letterSpacing.unit) {
+    case "PERCENT": { result += letterSpacing.value / 100 + 'em;'; break; }
+    case "PIXELS": { result += letterSpacing.value + 'px;'; break; }
+  }
+  return result
+}
+
+function getTextCase(textCase: TextCase): string {
+  let result = 'text-transform: '
+  switch (textCase) {
+    case undefined: { result = ''; break; }
+    case "LOWER": { result += 'lowercase'; break; }
+    case "ORIGINAL": { result += 'none'; break; }
+    case "TITLE": { result += 'capitalize'; break; }
+    case "UPPER": { result += 'uppercase'; break; }
+  }
+  return result
+}
+
 function main() {
-  const selectedTextNode: TextNode = <TextNode>figma.currentPage.selection[0]
-    
+
+  figma.ui.resize(240, 180)
+
+  const selectedTextNode = <TextNode>figma.currentPage.selection[0]
   if ((selectedTextNode != undefined) && (selectedTextNode.characters != undefined)) {
 
-    let fontSizeGetter = (start: number, end: number): number | PluginAPI["mixed"] => {
+    const fontSizeGetter = (start: number, end: number): number | PluginAPI["mixed"] => {
       return selectedTextNode.getRangeFontSize(start, end)
     }
 
-    let fontNameGetter = (start: number, end: number): FontName | PluginAPI["mixed"] => {
+    const fontNameGetter = (start: number, end: number): FontName | PluginAPI["mixed"] => {
       return selectedTextNode.getRangeFontName(start, end)
     }
 
-    let fillsGetter = (start: number, end: number): Paint[] | PluginAPI["mixed"] => {
+    const fillsGetter = (start: number, end: number): Paint[] | PluginAPI["mixed"] => {
       return selectedTextNode.getRangeFills(start, end)
     }
 
-    let fontSizes = <Dictionary<number>>getAttributes(selectedTextNode, fontSizeGetter)
-    let fontNames = <Dictionary<FontName>>getAttributes(selectedTextNode, fontNameGetter)
-    let fills = <Dictionary<Paint[]>>getAttributes(selectedTextNode, fillsGetter)
-    
-    console.log('fontSizes', fontSizes)
-    console.log('fontNames', fontNames)
-    console.log('fills', fills)
-
-    let body: string = ''
-
-    const characters: string = selectedTextNode.characters
-    for (var i = 0; i < characters.length; i++) {
-      let span: string = '<span style="'+getSize(fontSizes[i])+getFamily(fontNames[i])+getColor(fills[i])+'">'+characters[i]+'</span>'
-      body = body + span
+    const lineHeightGetter = (start: number, end: number): LineHeight | PluginAPI["mixed"] => {
+      return selectedTextNode.getRangeLineHeight(start, end)
     }
 
-    let copy = true
-    figma.ui.postMessage({ body, copy }) 
+    const letterSpacingGetter = (start: number, end: number): LetterSpacing | PluginAPI["mixed"] => {
+      return selectedTextNode.getRangeLetterSpacing(start, end)
+    }
+
+    const textDecorationGetter = (start: number, end: number): TextDecoration | PluginAPI["mixed"] => {
+      return selectedTextNode.getRangeTextDecoration(start, end)
+    }
+
+    const textCaseGetter = (start: number, end: number): TextCase | PluginAPI["mixed"] => {
+      return selectedTextNode.getRangeTextCase(start, end)
+    }
+
+    const characters: string = selectedTextNode.characters
+    const charactersCount = characters.length
+
+    const fontSizes = getAttributes(charactersCount, fontSizeGetter)
+    const fontNames = getAttributes(charactersCount, fontNameGetter)
+    const fills = getAttributes(charactersCount, fillsGetter)
+    const lineHeights = getAttributes(charactersCount, lineHeightGetter)
+    const letterSpacings = getAttributes(charactersCount, letterSpacingGetter)
+    const textDecorations = getAttributes(charactersCount, textDecorationGetter)
+    const textCases = getAttributes(charactersCount, textCaseGetter)
+
+    const textAlignHorizontal = getTextAlignHorizontal(selectedTextNode.textAlignHorizontal)
+    const textIndent = getTextIndent(selectedTextNode.paragraphIndent)
+
+    let body: string = '<p style="' + textIndent + textAlignHorizontal + '">'
+    for (var i = 0; i < characters.length; i++) {
+      let character: string
+      if (characters.charCodeAt(i) == 10) {
+        character = '<br/>'
+      } else {
+        character = characters[i]
+      }
+      let span: string = '<span style="' + getSize(fontSizes[i])+getFamily(fontNames[i])+getColor(fills[i])+getLineHeight(lineHeights[i])+getLetterSpacing(letterSpacings[i])+getTextDecoration(textDecorations[i])+getTextCase(textCases[i])+'">'+character+'</span>'
+      body = body + span
+    }
+    body += '</p>'
+
+    let codes = []
+    for (var i=0; i< characters.length; i++) {
+      codes.push(characters.charCodeAt(i))
+    }
+    console.log(characters)
+    console.log(codes)
+    console.log(body)
+
+    const copy = true
+    const cuttedText = characters.slice(0, 16) + '...';
+    const notification = 'Attributed text (' + cuttedText + ') copied to clipboard'
+    figma.ui.postMessage({ body, copy, notification }) 
   } else {
-    let copy = false
-    let body = 'No text selected'
-    figma.ui.postMessage({ body, copy })
+    const copy = false
+    const body = ''
+    const notification = 'Select text to copy'
+    figma.ui.postMessage({ body, copy, notification })
   }
 }
 
