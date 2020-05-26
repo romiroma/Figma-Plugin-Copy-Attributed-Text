@@ -10,7 +10,7 @@ figma.showUI(__html__);
 
 type Getter<T> = (start: number, end: number) => T | PluginAPI['mixed']
 
-function getAttributes<T>(count: number, getter: Getter<T>): Dictionary<T> {
+function getAttributes<T>(count: number, getter: Getter<T>): T[] {
   let attributes: T[] = []
 
   for (var endIndex = 1; endIndex <= count; endIndex++) {
@@ -57,7 +57,7 @@ function getFamily(fontName: FontName): string {
     case 'black italic': { fontWeight = '900'; fontStyle = 'italic'; break; }
     
   }
-  return 'font-family: ' + fontName.family + ';' + 'font-weight: ' + fontWeight + ';' + 'font-style:' + fontStyle +';'
+  return 'font-family: \'' + fontName.family + '\';' + 'font-weight: ' + fontWeight + ';' + 'font-style:' + fontStyle +';'
 }
 
 function getTextAlignHorizontal(textAlign: string): string {
