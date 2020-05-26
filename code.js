@@ -20,13 +20,18 @@ function getAttributes(count, getter) {
     return attributes;
 }
 function getSize(size) {
-    return 'font-size: ' + size + 'px;';
+    if (size == figma.mixed) {
+        return '';
+    }
+    else {
+        return 'font-size:' + size + 'px;';
+    }
 }
 function getFamily(fontName) {
+    if (fontName == figma.mixed) {
+        return '';
+    }
     let fontWeight;
-    // console.log(fontName.style.toLowerCase())
-    // console.log(fontName)
-    // console.log('some')
     let fontStyle = 'normal';
     switch (fontName.style.toLowerCase()) {
         case 'black': {
@@ -155,6 +160,9 @@ function getTextIndent(indent) {
     return 'text-indent: ' + indent + 'px;';
 }
 function getLineHeight(lineHeight) {
+    if (lineHeight == figma.mixed) {
+        return '';
+    }
     let result = 'line-height: ';
     if ('value' in lineHeight) {
         result += lineHeight.value;
@@ -178,6 +186,9 @@ function getLineHeight(lineHeight) {
     return result;
 }
 function getTextDecoration(textDecoration) {
+    if (textDecoration == figma.mixed) {
+        return '';
+    }
     let result = 'text-decoration: ';
     switch (textDecoration) {
         case undefined: {
@@ -201,6 +212,9 @@ function getTextDecoration(textDecoration) {
 }
 // TODO: RESOLVE  MORE PAINT TYPES
 function getColor(paint) {
+    if (paint == figma.mixed) {
+        return '';
+    }
     let p = paint[0];
     if (p.type == "SOLID") {
         let a;
@@ -217,7 +231,7 @@ function getColor(paint) {
     }
 }
 function getLetterSpacing(letterSpacing) {
-    if (letterSpacing == undefined) {
+    if ((letterSpacing == undefined) || (letterSpacing == figma.mixed)) {
         return '';
     }
     let result = 'letter-spacing: ';
@@ -234,6 +248,9 @@ function getLetterSpacing(letterSpacing) {
     return result;
 }
 function getTextCase(textCase) {
+    if ((textCase == undefined) || (textCase == figma.mixed)) {
+        return '';
+    }
     let result = 'text-transform: ';
     switch (textCase) {
         case undefined: {
@@ -263,40 +280,21 @@ function main() {
     figma.ui.resize(240, 180);
     const selectedTextNode = figma.currentPage.selection[0];
     if ((selectedTextNode != undefined) && (selectedTextNode.characters != undefined)) {
-        const fontSizeGetter = (start, end) => {
-            return selectedTextNode.getRangeFontSize(start, end);
-        };
-        const fontNameGetter = (start, end) => {
-            return selectedTextNode.getRangeFontName(start, end);
-        };
-        const fillsGetter = (start, end) => {
-            return selectedTextNode.getRangeFills(start, end);
-        };
-        const lineHeightGetter = (start, end) => {
-            return selectedTextNode.getRangeLineHeight(start, end);
-        };
-        const letterSpacingGetter = (start, end) => {
-            return selectedTextNode.getRangeLetterSpacing(start, end);
-        };
-        const textDecorationGetter = (start, end) => {
-            return selectedTextNode.getRangeTextDecoration(start, end);
-        };
-        const textCaseGetter = (start, end) => {
-            return selectedTextNode.getRangeTextCase(start, end);
-        };
         const characters = selectedTextNode.characters;
         const charactersCount = characters.length;
-        const fontSizes = getAttributes(charactersCount, fontSizeGetter);
-        const fontNames = getAttributes(charactersCount, fontNameGetter);
-        const fills = getAttributes(charactersCount, fillsGetter);
-        const lineHeights = getAttributes(charactersCount, lineHeightGetter);
-        const letterSpacings = getAttributes(charactersCount, letterSpacingGetter);
-        const textDecorations = getAttributes(charactersCount, textDecorationGetter);
-        const textCases = getAttributes(charactersCount, textCaseGetter);
         const textAlignHorizontal = getTextAlignHorizontal(selectedTextNode.textAlignHorizontal);
         const textIndent = getTextIndent(selectedTextNode.paragraphIndent);
         let body = '<p style="' + textIndent + textAlignHorizontal + '">';
         for (var i = 0; i < characters.length; i++) {
+            const startIndex = i;
+            const endIndex = startIndex + 1;
+            const fontSize = selectedTextNode.getRangeFontSize(startIndex, endIndex);
+            const family = selectedTextNode.getRangeFontName(startIndex, endIndex);
+            const fill = selectedTextNode.getRangeFills(startIndex, endIndex);
+            const lineHeight = selectedTextNode.getRangeLineHeight(startIndex, endIndex);
+            const letterSpacing = selectedTextNode.getRangeLetterSpacing(startIndex, endIndex);
+            const textDecoration = selectedTextNode.getRangeTextDecoration(startIndex, endIndex);
+            const textCase = selectedTextNode.getRangeTextCase(startIndex, endIndex);
             let character;
             if (characters.charCodeAt(i) == 10) {
                 character = '<br/>';
@@ -304,7 +302,7 @@ function main() {
             else {
                 character = characters[i];
             }
-            let span = '<span style="' + getSize(fontSizes[i]) + getFamily(fontNames[i]) + getColor(fills[i]) + getLineHeight(lineHeights[i]) + getLetterSpacing(letterSpacings[i]) + getTextDecoration(textDecorations[i]) + getTextCase(textCases[i]) + '">' + character + '</span>';
+            let span = '<span style="' + getSize(fontSize) + getFamily(family) + getColor(fill) + getLineHeight(lineHeight) + getLetterSpacing(letterSpacing) + getTextDecoration(textDecoration) + getTextCase(textCase) + '">' + character + '</span>';
             body = body + span;
         }
         body += '</p>';
@@ -312,9 +310,9 @@ function main() {
         for (var i = 0; i < characters.length; i++) {
             codes.push(characters.charCodeAt(i));
         }
-        console.log(characters);
-        console.log(codes);
-        console.log(body);
+        // console.log(characters)
+        // console.log(codes)
+        // console.log(body)
         const copy = true;
         const cuttedText = characters.slice(0, 16) + '...';
         const notification = 'Attributed text (' + cuttedText + ') copied to clipboard';

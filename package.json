@@ -1,7 +1,7 @@
 {
-  "name": "CopyAttributedText",
-  "version": "1.0.0",
-  "description": "Your Figma Plugin",
+  "name": "Attributed Text Copy Helper",
+  "version": "1.0.1",
+  "description": "Figma plugin to make Attributed Text Copying easy",
   "main": "code.js",
   "scripts": {
     "build": "tsc -p tsconfig.json"
