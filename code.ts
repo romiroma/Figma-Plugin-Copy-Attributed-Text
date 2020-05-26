@@ -18,6 +18,8 @@ function getAttributes<T>(count: number, getter: Getter<T>): T[] {
     let attribute  = getter(startIndex, endIndex)
     if (attribute != figma.mixed) {
       attributes.push(attribute)
+    } else {
+      attributes.push(null)
     }
   }
 
@@ -84,9 +86,9 @@ function getLineHeight(lineHeight: LineHeight): string {
   if ('value' in lineHeight) {
     result += lineHeight.value
     switch (lineHeight.unit) {
-      case ("PERCENT":
+      case "PERCENT":
         { result += '%'; break; }
-      case ("PIXELS"):
+      case "PIXELS":
         { result += 'px'; break; }
     }
     result += ';';

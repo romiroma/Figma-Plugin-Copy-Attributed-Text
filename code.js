@@ -13,6 +13,9 @@ function getAttributes(count, getter) {
         if (attribute != figma.mixed) {
             attributes.push(attribute);
         }
+        else {
+            attributes.push(null);
+        }
     }
     return attributes;
 }
@@ -117,7 +120,7 @@ function getFamily(fontName) {
             break;
         }
     }
-    return 'font-family: ' + fontName.family + ';' + 'font-weight: ' + fontWeight + ';' + 'font-style:' + fontStyle + ';';
+    return 'font-family: \'' + fontName.family + '\';' + 'font-weight: ' + fontWeight + ';' + 'font-style:' + fontStyle + ';';
 }
 function getTextAlignHorizontal(textAlign) {
     let result = 'text-align:';
@@ -156,12 +159,12 @@ function getLineHeight(lineHeight) {
     if ('value' in lineHeight) {
         result += lineHeight.value;
         switch (lineHeight.unit) {
-            case ("PERCENT"):
+            case "PERCENT":
                 {
                     result += '%';
                     break;
                 }
-            case ("PIXELS"):
+            case "PIXELS":
                 {
                     result += 'px';
                     break;
