@@ -1,4 +1,5 @@
 # Figma Attributed Text Copy Helper
+https://www.figma.com/community/plugin/844921199150112500/Attributed-Text-Copy-Helper
 
 ## The plugin is used to easily copy attributed text just by selecting text node.
 
