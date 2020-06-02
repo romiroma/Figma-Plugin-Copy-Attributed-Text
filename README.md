@@ -16,4 +16,4 @@ That's it, now you have attributed text from TextNode copied into your clipboard
 * San Francisco font family (web version only, desktop works fine)
 
 #### Troubleshooting 
-if you have any issues, please, create github issue or contact me via email: romiroma@icloud.com
+if you experience any issues, please, <a href="https://github.com/romiroma/Figma-Plugin-Copy-Attributed-Text/issues/new/choose">create github issue</a>.
