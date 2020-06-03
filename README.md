@@ -13,7 +13,7 @@ When developing applications in Xcode, it's fast just to copy text from design v
 That's it, now you have attributed text from TextNode copied into your clipboard! Paste it into editors, what support that and enjoy!
 
 ### What doesn't work
-* San Francisco font family (web version only, desktop works fine)
+* San Francisco font family (web version only, desktop works fine) <a href="https://github.com/romiroma/Figma-Plugin-Copy-Attributed-Text/issues/1">issue link</a>
 
 #### Troubleshooting 
 if you experience any issues, please, <a href="https://github.com/romiroma/Figma-Plugin-Copy-Attributed-Text/issues/new/choose">create github issue</a>.
